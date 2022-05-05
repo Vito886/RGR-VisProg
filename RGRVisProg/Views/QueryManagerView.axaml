@@ -1,0 +1,24 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="RGRVisProg.Views.QueryManagerView">
+
+
+	<UserControl.Styles>
+		<StyleInclude Source="/Styles/Style.axaml"/>
+	</UserControl.Styles>
+
+	<Grid RowDefinitions="*, *, 50, 50, 50" ColumnDefinitions="*, *, *,*">
+		<Expander Header="From" Grid.Row="0" Grid.Column="0" HorizontalContentAlignment="Center"></Expander>
+		<Expander Header="Select Columns" HorizontalContentAlignment="Center" Grid.Row="0" Grid.Column="1"></Expander>
+		<Expander Header="With Filter" Grid.Row="0" Grid.Column="2" HorizontalContentAlignment="Center" Grid.ColumnSpan="2"></Expander>
+		<Expander Header="Group By" Grid.Row="1" Grid.Column="0" ExpandDirection="Up" HorizontalContentAlignment="Center"></Expander>
+		<Expander Header="With Group Filter" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" ExpandDirection="Up"></Expander>
+		<Expander Header="Your Requests" Grid.Row="1" Grid.Column="3" ExpandDirection="Up" HorizontalContentAlignment="Center"></Expander>
+		<TextBox Watermark="Request Name" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4"/>
+		<Button Name="Accept" Classes="btn" IsEnabled="False" Content="Accept" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4"/>
+		<Button Classes="btn" Command="{Binding $parent[Window].DataContext.OpenViewer}" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="4" Content="Back"/>
+	</Grid>
+</UserControl>
