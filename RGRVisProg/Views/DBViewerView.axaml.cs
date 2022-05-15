@@ -4,9 +4,9 @@ using Avalonia.Markup.Xaml;
 
 namespace RGRVisProg.Views
 {
-    public partial class ViewerView : UserControl
+    public partial class DBViewerView : UserControl
     {
-        public ViewerView()
+        public DBViewerView()
         {
             InitializeComponent();
         }

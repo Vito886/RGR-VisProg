@@ -10,7 +10,7 @@ using System;
 
 namespace RGRVisProg.ViewModels
 {
-    public class ViewerViewModel : ViewModelBase
+    public class DBViewerViewModel : ViewModelBase
     {
     }
 }
