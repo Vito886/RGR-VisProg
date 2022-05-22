@@ -14,7 +14,7 @@ namespace RGRVisProg.ViewModels
     public class MainWindowViewModel : ViewModelBase
     {
         private ViewModelBase page;
-        private DBViewerViewModel viewer;
+        private DBViewerViewModel dbViewer;
         private QueryManagerViewModel queryManager;
         public ViewModelBase Page
         {
@@ -23,9 +23,9 @@ namespace RGRVisProg.ViewModels
         }
         public MainWindowViewModel()
         {
-            viewer = new DBViewerViewModel(); 
+            dbViewer = new DBViewerViewModel(); 
             queryManager = new QueryManagerViewModel();  
-            Page = viewer;
+            Page = dbViewer;
         }
 
         public void OpenQueryManager()
@@ -35,7 +35,7 @@ namespace RGRVisProg.ViewModels
 
         public void OpenViewer()
         {
-            Page = viewer;
+            Page = dbViewer;
         }
     }
 }

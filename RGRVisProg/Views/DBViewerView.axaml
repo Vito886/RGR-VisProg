@@ -8,17 +8,20 @@
 	<UserControl.Styles>
 		<StyleInclude Source="/Styles/Style.axaml"/>
 	</UserControl.Styles>
-	
-	<Grid RowDefinitions="*, 50" ColumnDefinitions="*">
-		<TabControl Grid.Row="0" Grid.Column="0">
+
+	<Grid RowDefinitions="*, 50" ColumnDefinitions="*" >
+		<TabControl Grid.Row="0" Grid.Column="0" Items="{Binding Tables}">
 			<TabControl.ItemTemplate>
 				<DataTemplate>
-					<TextBlock/>
+					<StackPanel Orientation="Horizontal">
+						<TextBlock Text="{Binding Name}"/>
+						<Button Content="x" Click="DeleteTab" IsEnabled="{Binding IsSubTable}"/>
+					</StackPanel>
 				</DataTemplate>
 			</TabControl.ItemTemplate>
 			<TabControl.ContentTemplate>
 				<DataTemplate>
-					<UserControl/>
+					<UserControl Content="{Binding TableView}"/>
 				</DataTemplate>
 			</TabControl.ContentTemplate>
 		</TabControl>
