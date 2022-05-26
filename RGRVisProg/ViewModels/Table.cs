@@ -22,24 +22,19 @@ namespace RGRVisProg.ViewModels
             IsSubTable = _IsSubTable;
             tableView = _tableView;
             Properties = _Properties;
-            TableValues = new Dictionary<string, List<object?>>();
-            var a = TableView.GetTable();
+            Rows = new List<Dictionary<string, object?>>();
             dynamic table = TableView.GetTable();
             if (table != null)
             {
-                foreach (string prop in Properties)
+                Key = table[0].Key();
+                for (int j = 0; j < table.Count; j++)
                 {
-                    TableValues.Add(prop, new List<object?>() { name + ": " + prop });
-                }
-                for (int i = 0; i < TableValues.Count; i++)
-                {
+                    Dictionary<string, object?> tmp = new Dictionary<string, object?>();
                     foreach (string prop in Properties)
                     {
-                        for (int j = 0; j < table.Count; j++)
-                        {
-                            TableValues[prop].Add(table[j][prop]);
-                        }
+                        tmp.Add(prop, table[j][prop]);
                     }
+                    Rows.Add(tmp);
                 }
             }
         }
@@ -56,6 +51,8 @@ namespace RGRVisProg.ViewModels
             }
         }
 
+        public string Key { get; set; }
+
         public bool IsSubTable { get; }
 
         public ViewModelBase TableView
@@ -70,8 +67,18 @@ namespace RGRVisProg.ViewModels
             }
         }
 
-        public Dictionary<string, List<object?>> TableValues { get; }
+        public List<Dictionary<string, object?>> Rows { get; }
 
         public ObservableCollection<string> Properties { get; set; }
+
+        public List<object>? GetRemovableItems()
+        {
+            return TableView.RemovableItems;
+        }
+
+        public void SetRemoveInProgress(bool value)
+        {
+            TableView.RemoveInProgress = value;
+        }
     }
 }

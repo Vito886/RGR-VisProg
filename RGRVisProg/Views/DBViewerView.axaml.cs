@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Interactivity;
 using RGRVisProg.ViewModels;
+using System;
 
 namespace RGRVisProg.Views
 {
@@ -26,8 +27,23 @@ namespace RGRVisProg.Views
                 DBViewerViewModel? context = this.DataContext as DBViewerViewModel;
                 if (context != null)
                 {
-                    context.Tables.Remove(btn.DataContext as Table);
-                    context.Requests.Remove(btn.DataContext as Table);
+                    context.AllTables.Remove(btn.DataContext as Table);
+                    GC.Collect();
+                }
+            }
+        }
+
+        private void SelectedTabChanged(object control, SelectionChangedEventArgs args)
+        {
+            TabControl? tabControl = control as TabControl;
+            if (tabControl != null)
+            {
+                DBViewerViewModel? context = this.DataContext as DBViewerViewModel;
+                Table? table = tabControl.SelectedItem as Table;
+                if (context != null && table != null)
+                {
+                    context.CurrentTableName = table.Name;
+                    context.CurrentTableIsSubtable = table.IsSubTable;
                 }
             }
         }

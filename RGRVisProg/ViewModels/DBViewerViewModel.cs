@@ -9,18 +9,21 @@ using RGRVisProg.Models;
 using Microsoft.Data.Sqlite;
 using System.IO;
 using System;
+using Avalonia.Controls;
+using Microsoft.EntityFrameworkCore;
 
 namespace RGRVisProg.ViewModels
 {
     public class DBViewerViewModel : ViewModelBase
     {
         private ObservableCollection<Table> tables;
+        private ObservableCollection<Table> allTables;
         private ObservableCollection<Dog> dogs;
         private ObservableCollection<Owner> owners;
         private ObservableCollection<Run> runs;
         private ObservableCollection<Result> results;
         private ObservableCollection<Trainer> trainers;
-        private ObservableCollection<Table> requests;
+        private bool currentTableIsSubtable;
 
         private ObservableCollection<string> FindProperties(string entityName, List<string> properties)
         {
@@ -34,7 +37,23 @@ namespace RGRVisProg.ViewModels
                         i++;
                         while (properties[i].IndexOf("(") != -1 && i < properties.Count())
                         {
-                            result.Add(properties[i].Remove(properties[i].IndexOf("(")));
+                            string property = properties[i].Remove(properties[i].IndexOf("("));
+                            if (entityName == "Trainer" && property == "Name")
+                                result.Add("TrainerName");
+                            else if (entityName == "Run" && property == "Name")
+                                result.Add("RunName");
+                            else if (entityName == "Dog" && property == "FullName")
+                                result.Add("DogFullName");
+                            else if (entityName == "Owner" && property == "Id")
+                                result.Add("OwnerId");
+                            else
+                                result.Add(property);
+
+
+                            //if(!(entityName == "Trainer" && property == "Name"))
+                            //    result.Add(property);
+                            //else
+                            //    result.Add("TrainerName");
                             i++;
                         }
                         return result;
@@ -53,8 +72,7 @@ namespace RGRVisProg.ViewModels
             try
             {
                 tables = new ObservableCollection<Table>();
-                requests = new ObservableCollection<Table>();
-                var DataBase = new DogRunContext();
+                DataBase = new DogRunContext();
 
                 string tableInfo = DataBase.Model.ToDebugString();
                 tableInfo = tableInfo.Replace(" ", "");
@@ -64,34 +82,58 @@ namespace RGRVisProg.ViewModels
                                                             str.IndexOf("Navigation") == -1 && str.IndexOf("(Owner)") == -1));
 
 
+                DataBase.Dogs.Load<Dog>();
+                Dogs = DataBase.Dogs.Local.ToObservableCollection(); 
+                tables.Add(new Table("Dogs", false, new DogsTableViewModel(Dogs), FindProperties("Dog", properties)));
 
-                dogs = new ObservableCollection<Dog>(DataBase.Dogs);
-                tables.Add(new Table("Dogs", false, new DogsTableViewModel(dogs), FindProperties("Dog", properties)));
+                DataBase.Owners.Load<Owner>();
+                Owners = DataBase.Owners.Local.ToObservableCollection();
+                tables.Add(new Table("Owners", false, new OwnersTableViewModel(Owners), FindProperties("Owner", properties)));
 
-                owners = new ObservableCollection<Owner>(DataBase.Owners);
-                tables.Add(new Table("Owners", false, new OwnersTableViewModel(owners), FindProperties("Owner", properties)));
+                DataBase.Runs.Load<Run>();
+                Runs = DataBase.Runs.Local.ToObservableCollection();
+                tables.Add(new Table("Runs", false, new RunsTableViewModel(Runs), FindProperties("Run", properties)));
 
-                runs = new ObservableCollection<Run>(DataBase.Runs);
-                tables.Add(new Table("Runs", false, new RunsTableViewModel(runs), FindProperties("Run", properties)));
+                DataBase.Results.Load<Result>();
+                Results = DataBase.Results.Local.ToObservableCollection();
+                tables.Add(new Table("Results", false, new ResultsTableViewModel(Results), FindProperties("Result", properties)));
 
-                results = new ObservableCollection<Result>(DataBase.Results);
-                tables.Add(new Table("Results", false, new ResultsTableViewModel(results), FindProperties("Result", properties)));
+                DataBase.Trainers.Load<Trainer>();
+                Trainers = DataBase.Trainers.Local.ToObservableCollection();
+                tables.Add(new Table("Trainers", false, new TrainersTableViewModel(Trainers), FindProperties("Trainer", properties)));
 
-                trainers = new ObservableCollection<Trainer>(DataBase.Trainers);
-                tables.Add(new Table("Trainers", false, new TrainersTableViewModel(trainers), FindProperties("Trainer", properties)));
+                AllTables = new ObservableCollection<Table>(Tables.ToList());
+
+                CurrentTableName = "Dogs";
+                CurrentTableIsSubtable = false;
             }
             catch
             {
-                var a = 0;
+
             }
         }
 
+        public bool CurrentTableIsSubtable
+        {
+            get => !currentTableIsSubtable;
+            set => this.RaiseAndSetIfChanged(ref currentTableIsSubtable, value);
+        }
+        public string CurrentTableName { get; set; }
+        public DogRunContext DataBase { get; set; }
         public ObservableCollection<Table> Tables
         {
             get => tables;
             set
             {
                 this.RaiseAndSetIfChanged(ref tables, value);
+            }
+        }
+        public ObservableCollection<Table> AllTables
+        {
+            get => allTables;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref allTables, value);
             }
         }
         public ObservableCollection<Dog> Dogs
@@ -134,13 +176,96 @@ namespace RGRVisProg.ViewModels
                 this.RaiseAndSetIfChanged(ref trainers, value);
             }
         }
-        public ObservableCollection<Table> Requests
+
+        public void AddItem()
         {
-            get => requests;
-            set
+            switch (CurrentTableName)
             {
-                this.RaiseAndSetIfChanged(ref requests, value);
+                case "Dogs":
+                    {
+                        Dogs.Add(new Dog());
+                        break;
+                    }
+                case "Owners":
+                    {
+                        Owners.Add(new Owner());
+                        break;
+                    }
+                case "Results":
+                    {
+                        Results.Add(new Result());
+                        break;
+                    }
+                case "Runs":
+                    {
+                        Runs.Add(new Run());
+                        break;
+                    }
+                case "Trainers":
+                    {
+                        Trainers.Add(new Trainer());
+                        break;
+                    }
             }
+        }
+
+        public void DeleteItems()
+        {
+            Table currentTable = Tables.Where(table => table.Name == CurrentTableName).ToList()[0];
+            List<object>? RemovableItems = currentTable.GetRemovableItems();
+            currentTable.SetRemoveInProgress(true);
+            if (RemovableItems != null && RemovableItems.Count != 0)
+            {
+                switch (CurrentTableName)
+                {
+                    case "Dogs":
+                        {
+                            for (int i = 0; i < RemovableItems.Count; i++)
+                            {
+                                Dogs.Remove(RemovableItems[i] as Dog);
+                            }
+                            break;
+                        }
+                    case "Owners":
+                        {
+                            for (int i = 0; i < RemovableItems.Count; i++)
+                            {
+                                Owners.Remove(RemovableItems[i] as Owner);
+                            }
+                            break;
+                        }
+                    case "Results":
+                        {
+                            for (int i = 0; i < RemovableItems.Count; i++)
+                            {
+                                Results.Remove(RemovableItems[i] as Result);
+                            }
+                            break;
+                        }
+                    case "Runs":
+                        {
+                            for (int i = 0; i < RemovableItems.Count; i++)
+                            {
+                                Runs.Remove(RemovableItems[i] as Run);
+                            }
+                            break;
+                        }
+                    case "Trainers":
+                        {
+                            for (int i = 0; i < RemovableItems.Count; i++)
+                            {
+                                Trainers.Remove(RemovableItems[i] as Trainer);
+                            }
+                            break;
+                        }
+                }
+            }
+            currentTable.SetRemoveInProgress(false);
+        }
+
+        public void Save()
+        {
+            DataBase.SaveChanges();
         }
     }
 }
