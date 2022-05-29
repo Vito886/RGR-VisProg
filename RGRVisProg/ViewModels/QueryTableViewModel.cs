@@ -12,14 +12,17 @@ using System;
 
 namespace RGRVisProg.ViewModels
 {
-    public class QueryTableViewModel : MainWindowViewModel
+    public class QueryTableViewModel : ViewModelBase
     {
         private List<List<object>> queryList;
+        private List<Dictionary<string, object?>> queryDictionaries;
         public QueryTableViewModel(List<Dictionary<string, object?>> _queryDict)
         {
+            queryDictionaries = _queryDict;
             queryList = new List<List<object>>();
 
             List<string> properties = new List<string>();
+
             foreach (var property in _queryDict[0])
             {
                 properties.Add(property.Key);
@@ -36,16 +39,6 @@ namespace RGRVisProg.ViewModels
                 }
                 queryList.Add(values);
             }
-
-            //foreach (Dictionary<string, object?> items in _queryDict)
-            //{
-            //    List<object> values = new List<object>();
-            //    foreach(var item in items)
-            //    {
-            //        values.Add(item.Value);
-            //    }
-            //    queryList.Add(values);
-            //}
         }
 
         public List<List<object>> QueryList
@@ -54,6 +47,11 @@ namespace RGRVisProg.ViewModels
             {
                 return queryList;
             }
+        }
+
+        public override List<Dictionary<string, object?>> GetRows()
+        {
+            return queryDictionaries;
         }
     }
 }

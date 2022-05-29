@@ -5,14 +5,13 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="RGRVisProg.Views.QueryManagerView">
 
-
 	<UserControl.Styles>
 		<StyleInclude Source="/Styles/Style.axaml"/>
 	</UserControl.Styles>
 
 	<Grid RowDefinitions="*, *, 50, 50, 50" ColumnDefinitions="0.5*, 0.5*, *, 0.5*">
 		<Expander Header="From Tables" Grid.Row="0" Grid.Column="0" HorizontalContentAlignment="Center">
-			<ListBox Name="TableList" Items="{Binding Tables}" SelectionChanged="TableSelected" SelectionMode="Multiple">
+			<ListBox Name="TableList" Items="{Binding Tables}" IsEnabled="{Binding IsBDTableSelected}" SelectionChanged="TableSelected" SelectionMode="Multiple">
 				<ListBox.ItemTemplate>
 					<DataTemplate>
 						<TextBlock Text="{Binding Name}"/>
@@ -45,21 +44,21 @@
 						<DataGridTemplateColumn Header="Column" Width="*">
 							<DataGridTemplateColumn.CellTemplate>
 								<DataTemplate>
-									<ComboBox Items="{Binding Columns}" HorizontalAlignment="Stretch"/>
+									<ComboBox Name="FilterColumns" Items="{Binding Columns}" SelectionChanged="ComboBoxSelectChanged" HorizontalAlignment="Stretch"/>
 								</DataTemplate>
 							</DataGridTemplateColumn.CellTemplate>
 						</DataGridTemplateColumn>
 						<DataGridTemplateColumn Header="Condition" Width="*">
 							<DataGridTemplateColumn.CellTemplate>
 								<DataTemplate>
-									<ComboBox Items="{Binding Operators}" HorizontalAlignment="Stretch"/>
+									<ComboBox Name="FilterOperators" Items="{Binding Operators}" SelectionChanged="ComboBoxSelectChanged" HorizontalAlignment="Stretch"/>
 								</DataTemplate>
 							</DataGridTemplateColumn.CellTemplate>
 						</DataGridTemplateColumn>
 						<DataGridTemplateColumn Header="Value" Width="*">
 							<DataGridTemplateColumn.CellTemplate>
 								<DataTemplate>
-									<TextBox Classes="gridTextBox"/>
+									<TextBox Name="FilterValue" Text="{Binding FilterVal}" Watermark="{Binding Example}" IsEnabled="{Binding IsValueInputSupported}" Classes="gridTextBox"/>
 								</DataTemplate>
 							</DataGridTemplateColumn.CellTemplate>
 						</DataGridTemplateColumn>
@@ -73,13 +72,7 @@
 			</Grid>
 		</Expander>
 		<Expander Header="Group By" Grid.Row="1" Grid.Column="0" ExpandDirection="Up" HorizontalContentAlignment="Center">
-			<ListBox Name="GroupsColumnsList"  Items="{Binding Tables}" SelectionMode="Multiple">
-				<ListBox.ItemTemplate>
-					<DataTemplate>
-						<TextBlock Text="{Binding Name}"/>
-					</DataTemplate>
-				</ListBox.ItemTemplate>
-			</ListBox>
+			<ListBox Name="GroupsColumnsList" Items="{Binding SelectedColumns}" SelectionChanged="GroupingColumnSelected"/>
 		</Expander>
 		<Expander Header="With Group Filter" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" VerticalContentAlignment="Stretch" ExpandDirection="Up">
 			<Grid RowDefinitions="*, 40" ColumnDefinitions="*">
@@ -95,21 +88,21 @@
 						<DataGridTemplateColumn Header="Column" Width="*">
 							<DataGridTemplateColumn.CellTemplate>
 								<DataTemplate>
-									<ComboBox Items="{Binding Columns}" HorizontalAlignment="Stretch"/>
+									<ComboBox Name="GroupFilterColumns" Items="{Binding Columns}" SelectionChanged="ComboBoxSelectChanged" HorizontalAlignment="Stretch"/>
 								</DataTemplate>
 							</DataGridTemplateColumn.CellTemplate>
 						</DataGridTemplateColumn>
 						<DataGridTemplateColumn Header="Condition" Width="*">
 							<DataGridTemplateColumn.CellTemplate>
 								<DataTemplate>
-									<ComboBox Items="{Binding Operators}" HorizontalAlignment="Stretch"/>
+									<ComboBox Name="GroupFilterOperators" Items="{Binding Operators}" SelectionChanged="ComboBoxSelectChanged" HorizontalAlignment="Stretch"/>
 								</DataTemplate>
 							</DataGridTemplateColumn.CellTemplate>
 						</DataGridTemplateColumn>
 						<DataGridTemplateColumn Header="Value" Width="*">
 							<DataGridTemplateColumn.CellTemplate>
 								<DataTemplate>
-									<TextBox Classes="gridTextBox"/>
+									<TextBox Name="GroupFilterValue" Classes="gridTextBox" Text="{Binding FilterVal}" Watermark="{Binding Example}" IsEnabled="{Binding IsValueInputSupported}"/>
 								</DataTemplate>
 							</DataGridTemplateColumn.CellTemplate>
 						</DataGridTemplateColumn>

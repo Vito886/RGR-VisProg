@@ -24,6 +24,11 @@ namespace RGRVisProg.Views
             RequestName = this.FindControl<TextBox>("RequestName");
         }
 
+        private void InitializeComponent()
+        {
+            AvaloniaXamlLoader.Load(this);
+        }
+
         private void IsTableExist(QueryManagerViewModel context)
         {
             bool tableExist = false;
@@ -40,10 +45,7 @@ namespace RGRVisProg.Views
             else
                 this.FindControl<Button>("Accept").IsEnabled = false;
         }
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
+
         private void AddRequest(object control, RoutedEventArgs args)
         {
             QueryManagerViewModel? context = this.DataContext as QueryManagerViewModel;
@@ -53,6 +55,7 @@ namespace RGRVisProg.Views
                 this.FindControl<Button>("Accept").IsEnabled = false;
             }
         }
+
         private void RequestNameChanged(object control, KeyEventArgs args)
         {
             TextBox? requestName = control as TextBox;
@@ -72,6 +75,7 @@ namespace RGRVisProg.Views
                 }
             }
         }
+
         private void TableSelected(object control, SelectionChangedEventArgs args)
         {
             ListBox? tablesList = control as ListBox;
@@ -83,7 +87,24 @@ namespace RGRVisProg.Views
                     context.SelectedTables = new ObservableCollection<Table>();
                     foreach (Table table in tablesList.SelectedItems)
                     {
-                        context.SelectedTables.Add(table);
+                        if (!table.IsSubTable)
+                        {
+                            context.SelectedTables.Add(table);
+                            context.IsBDTableSelected = true;
+                        }
+                        else
+                        {
+                            context.ClearAll();
+                            foreach (Table subTable in tablesList.SelectedItems)
+                            {
+                                if (subTable.IsSubTable)
+                                {
+                                    context.SelectedTables.Add(subTable);
+                                }
+                            }
+                            context.IsBDTableSelected = false;
+                            break;
+                        }
                     }
                     context.Join();
 
@@ -98,6 +119,7 @@ namespace RGRVisProg.Views
                 }
             }
         }
+
         private void ColumnSelected(object control, SelectionChangedEventArgs args)
         {
             ListBox? tablesList = control as ListBox;
@@ -106,7 +128,7 @@ namespace RGRVisProg.Views
                 QueryManagerViewModel? context = this.DataContext as QueryManagerViewModel;
                 if (context != null)
                 {
-                    context.SelectedColumns = new ObservableCollection<string>();
+                    context.SelectedColumns.Clear();
                     context.Filters.Clear();
                     context.GroupFilters.Clear();
                     context.Filters.Add(new Filter("", context.SelectedColumns));
@@ -147,6 +169,20 @@ namespace RGRVisProg.Views
                 }
             }
         }
+
+        private void GroupingColumnSelected(object control, SelectionChangedEventArgs args)
+        {
+            ListBox? columnList = control as ListBox;
+            if (columnList != null)
+            {
+                QueryManagerViewModel? context = this.DataContext as QueryManagerViewModel;
+                if (context != null)
+                {
+                    context.GroupingColumn = columnList.SelectedItem as string;
+                }
+            }
+        }
+
         public void AddFilterOR(object control, RoutedEventArgs args)
         {
             QueryManagerViewModel? context = this.DataContext as QueryManagerViewModel;
@@ -215,6 +251,7 @@ namespace RGRVisProg.Views
                 }
             }
         }
+
         private void BackToViewer(object control, RoutedEventArgs args)
         {
             QueryManagerViewModel? context = this.DataContext as QueryManagerViewModel;
@@ -223,6 +260,46 @@ namespace RGRVisProg.Views
             {
                 context.ClearAll();
                 parentContext.OpenDBViewer();
+            }
+        }
+
+        private void ComboBoxSelectChanged(object control, SelectionChangedEventArgs args)
+        {
+            ComboBox? comboBox = control as ComboBox;
+            if (comboBox != null)
+            {
+                Filter? filterContext = comboBox.DataContext as Filter;
+                if (filterContext != null && comboBox.Name != null)
+                {
+                    if (comboBox.Name.Contains("Columns"))
+                    {
+                        filterContext.Column = comboBox.SelectedItem as string;
+                    }
+                    else if (comboBox.Name.Contains("Operators"))
+                    {
+                        filterContext.Operator = comboBox.SelectedItem as string;
+                    }
+                }
+            }
+        }
+
+        private void FilterValueChanged(object control, KeyEventArgs args)
+        {
+            TextBox? filterValue = control as TextBox;
+            if (filterValue != null)
+            {
+                QueryManagerViewModel? context = this.DataContext as QueryManagerViewModel;
+                if (context != null)
+                {
+                    if (context.ResultTable.Count == 0)
+                    {
+                        this.FindControl<Button>("Accept").IsEnabled = false;
+                    }
+                    else
+                    {
+                        IsTableExist(context);
+                    }
+                }
             }
         }
     }

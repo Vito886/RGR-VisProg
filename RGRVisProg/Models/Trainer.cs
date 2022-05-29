@@ -7,11 +7,14 @@ namespace RGRVisProg.Models
     {
         public Trainer()
         {
-            Dogs = new HashSet<Dog>();
+            DogOwnerNameNavigations = new HashSet<Dog>();
+            DogTrainerNameNavigations = new HashSet<Dog>();
+            Name = "None";
+            BestDog = "None";
         }
 
-        public byte[] Name { get; set; } = null!;
-        public byte[]? BestDog { get; set; }
+        public string Name { get; set; } = null!;
+        public string BestDog { get; set; } = null!;
 
         public object? this[string property]
         {
@@ -19,13 +22,19 @@ namespace RGRVisProg.Models
             {
                 switch (property)
                 {
-                    case "Name": return Name;
+                    case "TrainerName": return Name;
                     case "BestDog": return BestDog;
                 }
                 return null;
             }
         }
 
-        public virtual ICollection<Dog> Dogs { get; set; }
+        public string Key()
+        {
+            return "TrainerName";
+        }
+
+        public virtual ICollection<Dog> DogOwnerNameNavigations { get; set; }
+        public virtual ICollection<Dog> DogTrainerNameNavigations { get; set; }
     }
 }

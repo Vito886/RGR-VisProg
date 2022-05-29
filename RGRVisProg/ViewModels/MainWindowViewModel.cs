@@ -25,7 +25,6 @@ namespace RGRVisProg.ViewModels
             get => page;
         }
 
-        //{Binding $parent[Window].DataContext.OpenQueryManager}
         public MainWindowViewModel()
         {
             dbViewer = new DBViewerViewModel();
@@ -37,23 +36,11 @@ namespace RGRVisProg.ViewModels
         {
             Page = queryManager;
             queryManager.DeleteRequests();
-            //Observable.Merge().Take(1)
-            //    .Subscribe((note) =>
-            //    {
-
-            //        Page = dbViewer;
-            //    });
         }
 
         public void OpenDBViewer()
         {
             Page = dbViewer;
-            //Observable.Merge().Take(1)
-            //    .Subscribe((note) =>
-            //    {
-
-            //        Page = dbViewer;
-            //    });
         }
     }
 }

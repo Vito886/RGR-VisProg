@@ -7,10 +7,9 @@ namespace RGRVisProg.Models
     {
         public Owner()
         {
-            Dogs = new HashSet<Dog>();
+            Name = "None";
         }
-
-        public byte[] Name { get; set; } = null!;
+        public string Name { get; set; } = null!;
 
         public object? this[string property]
         {
@@ -18,12 +17,15 @@ namespace RGRVisProg.Models
             {
                 switch (property)
                 {
-                    case "Name": return Name;
+                    case "OwnerName": return Name;
                 }
                 return null;
             }
         }
 
-        public virtual ICollection<Dog> Dogs { get; set; }
+        public string Key()
+        {
+            return "OwnerName";
+        }
     }
 }

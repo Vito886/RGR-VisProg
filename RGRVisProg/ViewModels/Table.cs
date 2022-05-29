@@ -23,7 +23,9 @@ namespace RGRVisProg.ViewModels
             tableView = _tableView;
             Properties = _Properties;
             Rows = new List<Dictionary<string, object?>>();
+
             dynamic table = TableView.GetTable();
+
             if (table != null)
             {
                 Key = table[0].Key();
@@ -32,10 +34,20 @@ namespace RGRVisProg.ViewModels
                     Dictionary<string, object?> tmp = new Dictionary<string, object?>();
                     foreach (string prop in Properties)
                     {
-                        tmp.Add(prop, table[j][prop]);
+                        if (name == "Dogs" && prop == "OwnerName")
+                        {
+                            string owName = table[j][prop].ToString();
+                            tmp.Add(prop, owName.Substring(0, owName.Length - 1));
+                        }
+                        else
+                            tmp.Add(prop, table[j][prop]);
                     }
                     Rows.Add(tmp);
                 }
+            }
+            else if (IsSubTable)
+            {
+                Rows = TableView.GetRows();
             }
         }
 

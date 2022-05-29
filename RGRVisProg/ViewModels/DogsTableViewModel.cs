@@ -18,6 +18,7 @@ namespace RGRVisProg.ViewModels
         public DogsTableViewModel(ObservableCollection<Dog> _dogs)
         {
             Table = _dogs;
+            RemovableItems = new List<object>();
         }
 
         public ObservableCollection<Dog> Table

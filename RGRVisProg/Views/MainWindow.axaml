@@ -9,10 +9,10 @@
         Title="RGRVisProg"
 		Content="{Binding Page}">
 
-    <Design.DataContext>
-        <vm:MainWindowViewModel/>
-    </Design.DataContext>
+	<Design.DataContext>
+		<vm:MainWindowViewModel/>
+	</Design.DataContext>
 
-   
+
 
 </Window>

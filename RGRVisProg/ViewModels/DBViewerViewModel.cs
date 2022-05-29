@@ -40,20 +40,15 @@ namespace RGRVisProg.ViewModels
                             string property = properties[i].Remove(properties[i].IndexOf("("));
                             if (entityName == "Trainer" && property == "Name")
                                 result.Add("TrainerName");
-                            else if (entityName == "Run" && property == "Name")
-                                result.Add("RunName");
-                            else if (entityName == "Dog" && property == "FullName")
-                                result.Add("DogFullName");
-                            else if (entityName == "Owner" && property == "Id")
-                                result.Add("OwnerId");
+                            else if (entityName == "Run" && property == "Id")
+                                result.Add("RunId");
+                            else if (entityName == "Dog" && property == "Name")
+                                result.Add("DogName");
+                            else if (entityName == "Owner" && property == "Name")
+                                result.Add("OwnerName");
                             else
                                 result.Add(property);
 
-
-                            //if(!(entityName == "Trainer" && property == "Name"))
-                            //    result.Add(property);
-                            //else
-                            //    result.Add("TrainerName");
                             i++;
                         }
                         return result;
@@ -77,13 +72,15 @@ namespace RGRVisProg.ViewModels
                 string tableInfo = DataBase.Model.ToDebugString();
                 tableInfo = tableInfo.Replace(" ", "");
                 string[] splitTableInfo = tableInfo.Split("\r\n");
+
                 List<string> properties = new List<string>(splitTableInfo.Where(str => str.IndexOf("Entity") != -1 ||
                                                             (str.IndexOf("(") != -1 && str.IndexOf("<") == -1) &&
-                                                            str.IndexOf("Navigation") == -1 && str.IndexOf("(Owner)") == -1));
+                                                            str.IndexOf("Navigation") == -1 && str.IndexOf("(Owner)") == -1
+                                                             && str.IndexOf("Run(Run)ToPrincipalRunInverse:Results") == -1));
 
 
                 DataBase.Dogs.Load<Dog>();
-                Dogs = DataBase.Dogs.Local.ToObservableCollection(); 
+                Dogs = DataBase.Dogs.Local.ToObservableCollection();
                 tables.Add(new Table("Dogs", false, new DogsTableViewModel(Dogs), FindProperties("Dog", properties)));
 
                 DataBase.Owners.Load<Owner>();
@@ -214,8 +211,10 @@ namespace RGRVisProg.ViewModels
             Table currentTable = Tables.Where(table => table.Name == CurrentTableName).ToList()[0];
             List<object>? RemovableItems = currentTable.GetRemovableItems();
             currentTable.SetRemoveInProgress(true);
+
             if (RemovableItems != null && RemovableItems.Count != 0)
             {
+
                 switch (CurrentTableName)
                 {
                     case "Dogs":

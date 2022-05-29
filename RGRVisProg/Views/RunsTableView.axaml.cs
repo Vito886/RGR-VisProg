@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using RGRVisProg.ViewModels;
 
 namespace RGRVisProg.Views
 {
@@ -21,6 +22,22 @@ namespace RGRVisProg.Views
             if (args.PropertyName == "Results" || args.PropertyName == "Item")
             {
                 args.Cancel = true;
+            }
+        }
+
+        private void RowSelected(object control, SelectionChangedEventArgs args)
+        {
+            DataGrid? grid = control as DataGrid;
+            ViewModelBase? context = this.DataContext as ViewModelBase;
+            if (grid != null && context != null)
+            {
+                if (context.RemoveInProgress)
+                    return;
+                context.RemovableItems.Clear();
+                foreach (object item in grid.SelectedItems)
+                {
+                    context.RemovableItems.Add(item);
+                }
             }
         }
     }

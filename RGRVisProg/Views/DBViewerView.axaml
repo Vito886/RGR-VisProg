@@ -9,8 +9,8 @@
 		<StyleInclude Source="/Styles/Style.axaml"/>
 	</UserControl.Styles>
 
-	<Grid RowDefinitions="*, 50" ColumnDefinitions="*" >
-		<TabControl Grid.Row="0" Grid.Column="0" Items="{Binding Tables}">
+	<Grid RowDefinitions="*, auto, 50" ColumnDefinitions="*, *, *" >
+		<TabControl Grid.Row="0" Grid.Column="0" Items="{Binding AllTables}" SelectionChanged="SelectedTabChanged" Grid.ColumnSpan="3">
 			<TabControl.ItemTemplate>
 				<DataTemplate>
 					<StackPanel Orientation="Horizontal">
@@ -25,6 +25,10 @@
 				</DataTemplate>
 			</TabControl.ContentTemplate>
 		</TabControl>
-		<Button Classes="btn" Grid.Row="1" Grid.Column="0" Content="Open Query Manager" Command="{Binding $parent[Window].DataContext.OpenQueryManager}"/>
+		<Button Classes="gridBtn" Content="Add Row" Command="{Binding AddItem}" IsVisible="{Binding CurrentTableIsSubtable}" Grid.Row="1" Grid.Column="0"/>
+		<Button Classes="gridBtn" Content="Delete Row" Command="{Binding DeleteItems}" IsVisible="{Binding CurrentTableIsSubtable}" Grid.Row="1" Grid.Column="1"/>
+		<Button Classes="gridBtn" Content="Save" Command="{Binding Save}" IsVisible="{Binding CurrentTableIsSubtable}" Grid.Row="1" Grid.Column="2"/>
+		<Button Classes="gridBtn" Grid.ColumnSpan="3" Grid.Row="2" Grid.Column="0" Content="Open Query Manager" Command="{Binding $parent[Window].DataContext.OpenQueryManager}"/>
 	</Grid>
+
 </UserControl>
